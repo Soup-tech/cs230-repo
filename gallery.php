@@ -20,11 +20,7 @@
                             <p>'.$row["descript"].'</p>
                         </a>
                       </div>';
-
             }
         ?>
     </div>
-
-    
-
 </main>

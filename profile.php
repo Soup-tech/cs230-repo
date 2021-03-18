@@ -40,7 +40,7 @@ if (isset($_SESSION['uid'])) {
 
             <div class="form-group">
                 <img src="<?php echo $photo;?>" alt="profile pic" onclick="triggered();" id="prof-display">
-                <label for="prof-image" id="uname-style"><?php echo $pro_user;?></label>
+                <label for="prof-image" id="uname-style"><?php echo $prof_user;?></label>
                 <input type="file" name="prof-image" id="prof-image" onchange="preview(this)" class="form-control" style="display: none;">
             </div>
 
