@@ -1,32 +1,215 @@
-.center-me {
-    display: flex;
-    justify-content: center;
-    padding: 40px;
+:root {
+    /* tweak to your heart's content */
+    --panel-max-possible-width: 1700px; /* maximum absolute width of the main panel before it stops scaling to fill larger screens */
+    --panel-preferred-width-scale: 75%; /* preferred percentage of the screen we should use if we have the room (should be % or vw) */
+    --panel-min-possible-width-before-truncating: 1400px; /* minimum absolute width of the main panel - panel will start eating up whitespace to stay at this width instead of scaling to a smaller value with the screen */
+    --panel-preferred-width-scale-when-truncated: 50vw; /* preferred percentage of the screen we should use for the form only, after we discard the info panel to save room (should be % or vw) */
+    --panel-min-possible-width: 600px; /* minimum possible width of the form alone - form will eat up any whitespace it can to stay at this width, but could still dip below this if the screen is thinner than this value */
 }
 
-.bg-cover {
-    background-image: url("../images/doge-background.jpg");
-    height: 100vh;
-    background-position: center;
+
+
+body {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    background-image: url('/images/background-morgantown-1.jpg');
     background-size: cover;
-    background-attachment: scroll;
-    background-repeat: no-repeat; 
+    margin: 0px;
+    color: #2f2f2f;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
 }
 
-.form-signin {
-    background-color: beige;
-    padding: 20px;
-    border-radius: 20px;
-    text-align: center;
+main {
+    display: flex;
+    flex-grow: 1;
+    overflow-y: scroll;
+    scrollbar-width: none;
 }
 
 
-input {
-    margin-bottom: 10px
+
+main::-webkit-scrollbar {
+    display: none;
 }
 
-img {
-    max-width: 500px;
-    max-height: 200px;
+.form-panel {
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 32px;
+    width: max(var(--panel-min-possible-width-before-truncating), min(var(--panel-preferred-width-scale), var(--panel-max-possible-width)));
     margin: auto;
+    
+}
+
+.info-panel {
+    display: flex;
+    flex-flow: column;
+    width: 50%;
+    padding: 48px;
+    background-color: #2f2f2f;
+    border-bottom-left-radius: 32px;
+    border-top-left-radius: 32px;
+    color: white;
+}
+
+.info-panel > p {
+    font-size: x-large;
+    margin-left: 16px;
+}
+
+.info-panel a {
+    color:MediumSeaGreen;
+}
+
+.info-panel > footer > a {
+    font-size: larger;
+}
+
+.info-panel > footer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.carousel-viewport {
+    flex: 1 1 0;
+    height: 100%;
+    overflow-x: hidden;
+    
+}
+
+.form-wrapper {
+    padding: 3%;
+    padding-left: 64px;
+    padding-right: 64px;
+}
+
+main h2 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: revert;
+}
+
+.info-panel > h2 {
+    text-align: left;
+}
+
+#login-pfp {
+    display: block;
+    width: 160px;
+    height: 160px;
+    margin: auto;
+    margin-bottom: 32px;
+    clip-path: circle(79px at center);
+}
+
+.error-message {
+    text-align: center;
+    color: red;
+    border: 1px solid red;
+    border-radius: 6px;
+    padding: 4px;
+}
+
+.error-message:empty {
+    display: none;
+}
+
+main label {
+    font-weight: bold;
+    margin-bottom: 0px;
+}
+
+.required-label::after {
+    content: ' *';
+    color: red;
+}
+
+.password-policy-info {
+    font-style: italic;
+    color: var(--theme-light-1);
+    margin-bottom: 0px;
+}
+
+main input:not([type=checkbox]) {
+    width: 100%;
+    height: 48px;
+    border-radius: 24px;
+    border: none;
+    padding-left: 24px;
+    font-size: 0.9rem;
+    outline: none;
+    margin: auto;
+    margin-top: 8px;
+    margin-bottom: 24px;
+    display: block;
+    background-color: rgba(0, 0, 0, 0);
+    border: 1px solid #797979;
+}
+
+.invalid-password {
+    border: 1px solid red !important;
+    color: red;
+}
+
+.name-wrapper {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 16px;
+}
+
+main button {
+    display: block;
+    background-color: rgba(0, 0, 0, 0);
+    border: 2px solid MediumSeaGreen;
+    padding: 16px;
+    border-radius: 32px;
+    width: 60%;
+    color: mediumSeaGreen;
+    margin: auto;
+    margin-top: 24px;
+    margin-bottom: 32px;
+    font-size: larger;
+    cursor: pointer;
+    transition: background-color 0.2s linear;
+}
+
+main button:hover {
+    color: white;
+    background-color: green;
+}
+
+.form-wrapper a {
+    margin: auto;
+    margin-top: 24px;
+    display: block;
+    text-align: center;
+    font-size: larger;
+    text-decoration: none;
+    
+}
+
+@media only screen and (max-width: 1500px) {
+    .form-panel {
+        width: min(100vw, max(var(--panel-preferred-width-scale-when-truncated), var(--panel-min-possible-width)));
+    }
+
+    .info-panel {
+        display: none;
+    }
+    
+    .carousel-viewport {
+        width: 100%;
+    }
+}
+
+@media only screen and (max-height: 1000px) {
+    .form-panel {
+        height: 100%;
+        border-radius: 0px;
+    }
+    
+    .info-panel {
+        border-radius: 0px;
+    }
 }

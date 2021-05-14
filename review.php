@@ -1,104 +1,50 @@
-<?php 
-require 'includes/dbhandler.php';
-require 'includes/header.php'; 
-require 'includes/review-helper.php';
-?>
-
+<?php require 'includes/header.php' ?>
 <main>
-    <span id="testAvg"></span>
-    <div class="container" aligne="center" style="max-width: 800px;">
+    <link rel="stylesheet" href="/css/comments.css">
+    <div class="backdrop-filter"></div>
 
-        <div class="my-auto">
-
-            <form id="review-form" action="includes/review-helper.php" method="post">
-
-                <div class="container">
-                    <i class="fa fa-star fa-2x star-rev" data-index="1"></i>
-                    <i class="fa fa-star fa-2x star-rev" data-index="2"></i>
-                    <i class="fa fa-star fa-2x star-rev" data-index="3"></i>
-                    <i class="fa fa-star fa-2x star-rev" data-index="4"></i>
-                    <i class="fa fa-star fa-2x star-rev" data-index="5"></i>
+    <?php 
+            include_once 'includes/dbhandler.php';
+            //get place info from database and display title card
+            $stmt = safe_stmt_exec('SELECT * FROM gallery WHERE pid = ?', 'i', $_GET['id']);
+            $result = $stmt->get_result();            
+            $row = mysqli_fetch_assoc($result);
+            
+            echo'
+                <div class="header-card">
+                    <div class="media-body">
+                        <div class="inner-div">
+                            <img class="mr-3" alt="Picture" src="'.htmlspecialchars($row['picpath']).'">
+                            <h3 class="mt-0">'.htmlspecialchars($row['title']).'</h3>
+                            <p style="font-size:larger; text-align: center; color:rgb(70, 120, 80);";>Address: '.htmlspecialchars($row['address']).'</p>  
+                            <p>'.htmlspecialchars($row['descript']).'</p>  
+                        </div>
+                    </div>
                 </div>
+            ';
 
-                <div class="form-group" style="margin-top: 15px;">
-                    <label class="title-label" for="review-title" style="font-size: 16px; font-weight: bold;">Title</label>
-                    <input type="text" name="review-title" id="review-title" style="width: 100%; margin-bottom: 10px;">
-                    <textarea name="review" id="review-text" cols="80" rows="3" placeholder="Enter a Comment..."></textarea>
-                    <input type="hidden" name="rating" id="rating">
-                    <input type="hidden" name="item_id" value="<?php echo $_GET['id']; ?>"> 
-                </div>
-
-                <div class="form-group">
-                    <button class="btn btn-outline-danger" type="submit" name="review-submit" id="review-submit" style="width: 100%;">Review</button>
-                </div>
-
-            </form>
-
+        ?>
+    <!--styling for comment pannel, sets up buttons and fields-->
+    <div class="comment-section">
+        <div class="comment-reply-panel" id="main-comment-panel" action="includes/review-helper.php" method="POST">
+            <div class="comment-reply-field" id="main-comment-field" contenteditable></div>
+            <div class="comment-reply-panel-controls hide-until-enabled" id="main-comment-panel-controls">
+                <input type="checkbox" id="allow-replies" class="allow-replies-input" checked><label for="allow-replies">Allow replies</label>
+                <button onclick="commentCallback(null)">POST</button>
+            </div>
         </div>
-
-    </div>
-    <span id="review_list"></span>
-</main>
-
-<script type="text/javascript">
-var rateIndex = -1;
-var id = <?php echo $_GET['id'];?>;
-
-
-$(document).ready(function() {
-    reset_star();
-
-    // get reviews
-    xhr_getter('display-reviews.php?id=', "review_list");
-    //avg();
-    xhr_getter('includes/get-ratings.php?id=', "testAvg");
-
-    if (localStorage.getItem('rating') != null) {
-        setStars(parseInt(localStorage.getItem('rating')));
-    }
-    $('.star-rev').on('click', function() {
-        rateIndex = parseInt($(this).data('index'));
-        localStorage.setItem('rating', rateIndex);
-    });
-    $('.star-rev').mouseover(function() {
-        reset_star();
-        var currIndex = parseInt($(this).data('index'));
-        setStars(currIndex);
-
-    });
-    $('.star-rev').mouseleave(function() {
-        reset_star();
-
-        if (rateIndex != -1) {
-            setStars(rateIndex);
-        }
-    });
-
-    function setStars(max) {
-        for (var i = 0; i < max; i++) {
-            $('.star-rev:eq(' + i + ')').css('color', 'goldenrod');
-        }
-        document.getElementById('rating').value = parseInt(localStorage.getItem('rating'));
-        console.log(id);
-    }
-
-    function reset_star() {
-        $('.star-rev').css('color', 'grey');
-    }
-
-
-    //Used to interchangeably send GET requests for review display data. 
-    function xhr_getter(prefix, element) {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            // If the GET request was successful, fill in the span element with the review_list id with reviews
-            if (this.readyState == 4 && this.status == 200) {
-                document.getElementById(element).innerHTML = this.responseText;
+        <div class="comment-tray">
+        <!--lists all comments-->
+        <?php
+            require_once 'includes/fetch-comment-helper.php';
+            require_once 'view-components/comment.php';
+            foreach(comments_on($_GET['id']) as $comment) {
+                echo_comment($comment);
             }
-        };
-        url = prefix + id;
-        xhttp.open("GET", url, true);
-        xhttp.send();
-    }
-});
-</script>
+        ?>
+        </div>
+        <script src="/js/comments.js"></script>
+    </div>
+    <!-- script and stylesheetfor options-tray already loaded in header for notification tray, do not need to load again --> 
+    <div class="options-tray user-mention-autocomplete-tray hide-until-enabled"></div>
+</main>

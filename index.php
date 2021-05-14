@@ -2,60 +2,83 @@
 require 'includes/header.php';
 ?>
 
-<main>
+<body>
 
-	<link rel="stylesheet" href="css/about.css">
+    <main>
+        <link rel="stylesheet" href="/css/index.css">
+        <div class="background"></div>
 
-	<div class="about">
-		<h1>About Us</h1>
-		<p>a;dfjieoanvnkcnafkjdfjkabdjfb</p>
-	</div>
+        <div class="contentWrapper" id="homePageWrapper">
 
-	<div class="row">
-		<div class="column">
-			<div class="card">
-				<img src="images/dogecoin.jpg">
-				<div class="container">
-					<h2>CEO</h2>
-					<p>Harrison Ford</p>
-					<p>Email: solo@cs230.com</p>
-				</div>
-			</div>
-		</div>
+            <!-- Home Page Title Section -->
+            <section class="homePage">
+                <div class="mainSearchWrapper" id="mainSearchWrapper">
+                    <h1 class="mainTitle" id="quickSearchMainTitle">Housing Helper</h1>
+                    <p id="quickSearchSubTitle">Search for Housing Reviews</p>
 
-		<div class="column">
-                        <div class="card">
-                                <img src="images/doge.jpg">
-                                <div class="container">
-                                        <h2>CEO</h2>
-                                        <p>Harrison Ford</p>
-                                        <p>Email: solo@cs230.com</p>
-                                </div>
+                    <!-- Search Bar Section -->
+                    <section class="quickSearch" id="quickSearch">
+                        <div class="quickSearchWrapper">
+                            <div class="searchWrapper">
+                                <form method="POST" action="/index.php">
+                                    <input name="address" type="text" id="quickSearchLookup" class="quickSearchLookup"
+                                        placeholder="Search for a Location (by address)" />
+                                    <button type="submit">Search</button>
+                                </form>
+                            </div>
                         </div>
+                    </section>
                 </div>
+            </section>
 
-		<div class="column">
-                        <div class="card">
-                                <img src="images/doge-moon.jpg">
-                                <div class="container">
-                                        <h2>CEO</h2>
-                                        <p>Harrison Ford</p>
-                                        <p>Email: solo@cs230.com</p>
-                                </div>
-                        </div>
-                </div>
+            <section class="cards">
+                <ul>
+                    <?php
+                        include_once 'includes/dbhandler.php';
+                        if (isset($_POST['address'])) {
 
-		<div class="column">
-                        <div class="card">
-                                <img src="images/doge-ram.jpg">
-                                <div class="container">
-                                        <h2>CEO</h2>
-                                        <p>Harrison Ford</p>
-                                        <p>Email: solo@cs230.com</p>
-                                </div>
-                        </div>
-                </div>
-	</div>
+                            $address = $_POST['address'];
+                            if (empty($address)) {
+                                header("Location: /index.php?error=EmptySearch");
+                                exit();
+                            }
 
-</main>
+                            $data = safe_query("SELECT address FROM gallery WHERE address=?","s",$address);
+                           
+                            if (empty($data)) {
+                                echo '
+                                        <div class="error-message">
+                                            <p>Sorry. That does not seem to be in our database. Would you like to <a href="/request.php">request</a> a board be made?</p>
+                                        </div>
+                                     ';                               
+                                
+                            } else {
+                                $sql = "SELECT * FROM gallery";
+                                $query = mysqli_query($conn, $sql);
+                                $row = mysqli_fetch_assoc($query);
+                                echo '
+                                    <a href="review.php?id='.$row['pid'].'">
+                                        <li style="list-style-type: none;">
+                                            <div class="card-wrapper">
+                                                
+                                                    <div class="pic-card">
+                                                        <img src="'.$row['picpath'].'" style="border-radius: 25px 0px 0px 25px">
+                                                    </div>
+                                                    <div class="info-card">
+                                                        <strong>'.$row['address'].'</strong>
+                                                        Description: '.$row['descript'].'
+                                                    </div>
+                                            </div>
+                                        </li>
+                                    </a>
+                                     ';
+                            }
+                        }
+                        
+                    ?>
+                </ul>
+            </section>
 
+        </div>
+    </main>
+</body>
